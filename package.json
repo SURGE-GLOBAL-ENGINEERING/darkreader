@@ -47,6 +47,9 @@
     "README.md"
   ],
   "type": "module",
+  "engines": {
+    "node": ">=18.20"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/SURGE-GLOBAL-ENGINEERING/darkreader"
