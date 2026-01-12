@@ -37,8 +37,7 @@
     "deno:bootstrap": "deno run --allow-read=./ --allow-sys=uid --allow-write=deno.json tasks/deno.js"
   },
   "main": "darkreader.js",
-  "module": "darkreader.mjs",
-  "type": "module",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/SURGE-GLOBAL-ENGINEERING/darkreader"
