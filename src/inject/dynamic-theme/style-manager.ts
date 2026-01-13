@@ -1,3 +1,4 @@
+import { shouldIgnoreElement } from 'generators/utils/ignore-styles';
 import type {Theme} from '../../definitions';
 import {forEach} from '../../utils/array';
 import {removeCSSComments} from '../../utils/css-text/css-text';
@@ -82,20 +83,29 @@ export function shouldManageStyle(element: Node | null): boolean {
 }
 
 export function getManageableStyles(node: Node | null, results: StyleElement[] = [], deep = true): StyleElement[] {
-    if (shouldManageStyle(node)) {
+
+    if (node && shouldIgnoreElement(node as HTMLElement)) {
+        return results;
+    }
+    
+    if (node && shouldManageStyle(node)) {
         results.push(node as StyleElement);
-    } else if (node instanceof Element || (isShadowDomSupported && node instanceof ShadowRoot) || node === document) {
-        forEach(
-            (node as Element).querySelectorAll(STYLE_SELECTOR),
-            (style: StyleElement) => getManageableStyles(style, results, false),
-        );
-        if (
-            deep && (
-                (node as Element).children?.length > 0 || 
-                (node as Element).shadowRoot
-            )
-        ) {
-            iterateShadowHosts(node, (host) => getManageableStyles(host.shadowRoot, results, false));
+    } else if (
+        node instanceof Element || node instanceof Document ||
+        (isShadowDomSupported && node instanceof ShadowRoot)
+    ) {
+        forEach(node.querySelectorAll(STYLE_SELECTOR), (style) => {
+            if (!shouldIgnoreElement(style as HTMLElement)) {
+                getManageableStyles(style, results, false);
+            }
+        });
+        
+        if (deep) {
+            iterateShadowHosts(node, (host) => {
+                if (!shouldIgnoreElement(host as HTMLElement)) {
+                    getManageableStyles(host.shadowRoot, results, false);
+                }
+            });
         }
     }
     return results;
